@@ -12,7 +12,7 @@ public class Business {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BusinessType businessTypeId;
+    private BusinessType businessType;
 
     @Column(nullable = false, length = 100)
     private String name;
@@ -41,21 +41,20 @@ public class Business {
     protected Business() {}
 
     public Business(
-            String id, BusinessType businessTypeId, String name,
-            String phone, String street, String city,
-            boolean isOpen
+            String id, BusinessType businessType, String name,
+            String phone, String street, String city
     ) {
         this.id = id;
-        this.businessTypeId = businessTypeId;
+        this.businessType = businessType;
         this.name = name;
         this.phone = phone;
         this.street = street;
         this.city = city;
-        this.isOpen = isOpen;
+        this.isOpen = true;
     }
 
     public String getId() { return id; }
-    public BusinessType getBusinessTypeId() { return businessTypeId; }
+    public BusinessType getBusinessType() { return businessType; }
     public String getName() { return name; }
     public String getDescription() { return description; }
     public String getPhone() { return phone; }
@@ -65,8 +64,8 @@ public class Business {
     public Double getLongitude() { return longitude; }
     public boolean isOpen() { return isOpen; }
 
-    public void setBusinessTypeId(BusinessType businessTypeId) {
-        this.businessTypeId = businessTypeId;
+    public void setBusinessType(BusinessType businessType) {
+        this.businessType = businessType;
     }
 
     public void setName(String name) {

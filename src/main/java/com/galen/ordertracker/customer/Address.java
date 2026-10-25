@@ -11,7 +11,7 @@ public class Address {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customerId;
+    private Customer customer;
 
     @Column(nullable = false, length = 100)
     private String street;
@@ -31,11 +31,11 @@ public class Address {
     protected Address() {}
 
     public Address(
-            Customer customerId, String street,
+            Customer customer, String street,
             String city, Double latitude,
             Double longitude
     ) {
-        this.customerId = customerId;
+        this.customer = customer;
         this.street = street;
         this.city = city;
         this.latitude = latitude;
@@ -44,15 +44,15 @@ public class Address {
     }
 
     public String getId() { return id; }
-    public Customer getCustomerId() { return customerId; }
+    public Customer getCustomerId() { return customer; }
     public String getStreet() { return street; }
     public String getCity() { return city; }
     public String getPostalCode() { return postalCode; }
     public Double getLatitude() { return latitude; }
     public Double getLongitude() { return longitude; }
 
-    public void setCustomerId(Customer customerId) {
-        this.customerId = customerId;
+    public void setCustomerId(Customer customer) {
+        this.customer = customer;
     }
 
     public void setStreet(String street) {
