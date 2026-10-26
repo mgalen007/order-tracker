@@ -20,7 +20,7 @@ public class Business {
     @Column(length = 500)
     private String description;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false, length = 10, unique = true)
     private String phone;
 
     @Column(nullable = false, length = 100)
