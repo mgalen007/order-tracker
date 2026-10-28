@@ -9,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "orders")
@@ -16,7 +17,7 @@ public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "customer_id", nullable = false)
@@ -30,7 +31,7 @@ public class Order {
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal totalAmount;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -55,7 +56,7 @@ public class Order {
         this.business = business;
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
@@ -77,6 +78,10 @@ public class Order {
 
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
     }
 
     public Business getBusiness() {

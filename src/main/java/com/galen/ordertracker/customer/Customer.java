@@ -1,6 +1,7 @@
 package com.galen.ordertracker.customer;
 
 import java.time.Instant;
+import java.util.UUID;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -10,7 +11,7 @@ public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     @Column(nullable = false, length = 100)
     private String name;
@@ -18,7 +19,7 @@ public class Customer {
     @Column(nullable = false, length = 100, unique = true)
     private String email;
 
-    @Column(nullable = false, length = 10, unique = true)
+    @Column(nullable = false, length = 16, unique = true)
     private String phone;
 
     @CreationTimestamp
@@ -33,6 +34,7 @@ public class Customer {
         this.phone = phone;
     }
 
+    public UUID getId() { return id; }
     public String getName() { return name; }
     public String getEmail() { return email; }
     public String getPhone() { return phone; }

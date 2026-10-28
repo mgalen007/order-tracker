@@ -2,13 +2,15 @@ package com.galen.ordertracker.business;
 
 import jakarta.persistence.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "businesses")
 public class Business {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -20,7 +22,7 @@ public class Business {
     @Column(length = 500)
     private String description;
 
-    @Column(nullable = false, length = 10, unique = true)
+    @Column(nullable = false, length = 16, unique = true)
     private String phone;
 
     @Column(nullable = false, length = 100)
@@ -36,24 +38,23 @@ public class Business {
     private Double longitude;
 
     @Column(nullable = false)
-    private boolean isOpen;
+    private boolean open;
 
     protected Business() {}
 
     public Business(
-            String id, BusinessType businessType, String name,
+            BusinessType businessType, String name,
             String phone, String street, String city
     ) {
-        this.id = id;
         this.businessType = businessType;
         this.name = name;
         this.phone = phone;
         this.street = street;
         this.city = city;
-        this.isOpen = true;
+        this.open = true;
     }
 
-    public String getId() { return id; }
+    public UUID getId() { return id; }
     public BusinessType getBusinessType() { return businessType; }
     public String getName() { return name; }
     public String getDescription() { return description; }
@@ -62,7 +63,7 @@ public class Business {
     public String getCity() { return city; }
     public Double getLatitude() { return latitude; }
     public Double getLongitude() { return longitude; }
-    public boolean isOpen() { return isOpen; }
+    public boolean isOpen() { return open; }
 
     public void setBusinessType(BusinessType businessType) {
         this.businessType = businessType;
@@ -96,7 +97,7 @@ public class Business {
         this.longitude = longitude;
     }
 
-    public void setIsOpen(boolean isOpen) {
-        this.isOpen = isOpen;
+    public void setOpen(boolean open) {
+        this.open = open;
     }
 }

@@ -2,12 +2,14 @@ package com.galen.ordertracker.customer;
 
 import jakarta.persistence.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "addresses")
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "customer_id", nullable = false)
@@ -43,15 +45,15 @@ public class Address {
         this.postalCode = "00000";
     }
 
-    public String getId() { return id; }
-    public Customer getCustomerId() { return customer; }
+    public UUID getId() { return id; }
+    public Customer getCustomer() { return customer; }
     public String getStreet() { return street; }
     public String getCity() { return city; }
     public String getPostalCode() { return postalCode; }
     public Double getLatitude() { return latitude; }
     public Double getLongitude() { return longitude; }
 
-    public void setCustomerId(Customer customer) {
+    public void setCustomer(Customer customer) {
         this.customer = customer;
     }
 

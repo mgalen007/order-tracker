@@ -9,7 +9,7 @@ import java.util.UUID;
 public interface ItemRepository extends JpaRepository<Item, UUID> {
     List<Item> findByBusinessId(UUID businessId);
 
-    List<Item> findByCategory(String category);
+    List<Item> findByCategoryId(UUID categoryId);
 
     List<Item> findByAvailableTrue();
 
