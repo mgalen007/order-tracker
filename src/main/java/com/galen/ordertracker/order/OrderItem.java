@@ -4,6 +4,7 @@ import com.galen.ordertracker.item.Item;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Entity
 @Table(name = "order_items")
@@ -11,20 +12,20 @@ public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
 
     @Column(nullable = false)
     private int quantity;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal unitPrice;
 
     protected OrderItem() {}
@@ -36,7 +37,7 @@ public class OrderItem {
         this.unitPrice = unitPrice;
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 

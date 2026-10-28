@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "payments")
@@ -13,7 +14,7 @@ public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_id", nullable = false)
@@ -23,7 +24,7 @@ public class Payment {
     @Column(nullable = false)
     private PaymentMethod method;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
@@ -32,6 +33,8 @@ public class Payment {
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
+    private Instant createdAt;
+
     private Instant paidAt;
 
     protected Payment() {}
@@ -43,7 +46,7 @@ public class Payment {
         this.status = PaymentStatus.PENDING;
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
@@ -61,6 +64,10 @@ public class Payment {
 
     public PaymentStatus getStatus() {
         return status;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
     }
 
     public Instant getPaidAt() {
@@ -81,6 +88,10 @@ public class Payment {
 
     public void setStatus(PaymentStatus status) {
         this.status = status;
+    }
+
+    public void setPaidAt(Instant paidAt) {
+        this.paidAt = paidAt;
     }
 
 }

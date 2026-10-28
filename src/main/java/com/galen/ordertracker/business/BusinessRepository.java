@@ -9,7 +9,7 @@ import java.util.UUID;
 public interface BusinessRepository extends JpaRepository<Business, UUID> {
     List<Business> findByBusinessType(BusinessType businessType);
 
-    Optional<Business> findByName(String name);
+    List<Business> findByName(String name);
 
     Optional<Business> findByPhone(String phone);
 
