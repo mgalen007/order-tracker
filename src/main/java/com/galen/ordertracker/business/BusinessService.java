@@ -38,29 +38,8 @@ public class BusinessService {
         return this.mapper.toResponse(business);
     }
 
-    public List<BusinessResponse> findBusinessesByName(String name) {
-        return this.repository.findByName(name)
-                .stream()
-                .map(this.mapper::toResponse)
-                .toList();
-    }
-
-    public List<BusinessResponse> findBusinessesByType(BusinessType businessType) {
-        return this.repository.findByBusinessType(businessType)
-                .stream()
-                .map(this.mapper::toResponse)
-                .toList();
-    }
-
-    public List<BusinessResponse> findByStreet(String street) {
-        return this.repository.findByStreet(street)
-                .stream()
-                .map(this.mapper::toResponse)
-                .toList();
-    }
-
-    public List<BusinessResponse> findByCity(String city) {
-        return this.repository.findByCity(city)
+    public List<BusinessResponse> findAllBusinesses() {
+        return this.repository.findAll()
                 .stream()
                 .map(this.mapper::toResponse)
                 .toList();
