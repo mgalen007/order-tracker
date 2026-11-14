@@ -66,6 +66,13 @@ public class CustomerService {
                 .toList();
     }
 
+    public List<CustomerResponse> findAllCustomers() {
+        return this.repository.findAll()
+                .stream()
+                .map(this.mapper::toResponse)
+                .toList();
+    }
+
     @Transactional
     public CustomerResponse updateCustomer(UUID id, UpdateCustomerRequest req) {
         Customer customer = this.repository.findById(id)

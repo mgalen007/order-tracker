@@ -35,10 +35,8 @@ public class CustomerController {
     }
 
     @GetMapping
-    public List<CustomerResponse> findCustomersByName(
-            @RequestParam String name
-    ) {
-        return this.service.findCustomersByName(name);
+    public List<CustomerResponse> findCustomersByName() {
+        return this.service.findAllCustomers();
     }
 
     @PatchMapping("/{id}")
