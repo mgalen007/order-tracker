@@ -78,7 +78,7 @@ public class CustomerService {
         return this.mapper.toResponse(customer);
     }
 
-    public CustomerResponse deleteBusiness(UUID id) {
+    public CustomerResponse deleteCustomer(UUID id) {
         Customer customer = this.repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
