@@ -5,7 +5,7 @@ import java.util.UUID;
 public record AddressResponse(
         UUID id,
         String name,
-        String customerId,
+        UUID customerId,
         String street,
         String city,
         String postalCode,

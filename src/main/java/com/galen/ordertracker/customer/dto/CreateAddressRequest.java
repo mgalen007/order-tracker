@@ -3,6 +3,7 @@ package com.galen.ordertracker.customer.dto;
 import com.galen.ordertracker.customer.Customer;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.UUID;
 
 public record CreateAddressRequest(
 
@@ -11,8 +12,8 @@ public record CreateAddressRequest(
         String name,
 
         @NotNull
-        @Size(min = 36, max = 36)
-        String customerId,
+        @UUID
+        UUID customerId,
 
         @NotBlank
         @Size(min = 7, max = 12)

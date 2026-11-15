@@ -3,6 +3,7 @@ package com.galen.ordertracker.customer.dto;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.UUID;
 
 
 public record UpdateAddressRequest (
@@ -10,7 +11,7 @@ public record UpdateAddressRequest (
         @Size(min = 3, max = 100)
         String name,
 
-        @Size(min = 36, max = 36)
+        @UUID
         String customerId,
 
         @Size(min = 7, max = 12)
