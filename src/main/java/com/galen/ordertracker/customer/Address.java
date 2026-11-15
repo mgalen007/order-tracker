@@ -36,10 +36,11 @@ public class Address {
     protected Address() {}
 
     public Address(
-            Customer customer, String street,
+            String name, Customer customer, String street,
             String city, Double latitude,
             Double longitude
     ) {
+        this.name = name;
         this.customer = customer;
         this.street = street;
         this.city = city;
