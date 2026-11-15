@@ -11,6 +11,9 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(length = 100)
+    private String name;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
@@ -52,6 +55,7 @@ public class Address {
     public String getPostalCode() { return postalCode; }
     public Double getLatitude() { return latitude; }
     public Double getLongitude() { return longitude; }
+    public String getName() { return name; }
 
     public void setCustomer(Customer customer) {
         this.customer = customer;
@@ -76,5 +80,7 @@ public class Address {
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
+
+    public void setName(String name) { this.name = name; }
 
 }
