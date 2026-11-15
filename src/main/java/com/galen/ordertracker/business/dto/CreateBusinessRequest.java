@@ -4,7 +4,7 @@ import com.galen.ordertracker.business.BusinessType;
 import jakarta.validation.constraints.*;
 
 public record CreateBusinessRequest(
-    @NotNull(message = "BusinessType cannot be empty")
+    @NotNull
     BusinessType businessType,
 
     @NotBlank
