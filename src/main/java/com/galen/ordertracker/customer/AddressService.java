@@ -55,6 +55,13 @@ public class AddressService {
         return this.mapper.toResponse(address);
     }
 
+    public List<AddressResponse> findAllAddresses() {
+        return this.repository.findAll()
+                .stream()
+                .map(this.mapper::toResponse)
+                .toList();
+    }
+
     @Transactional
     public AddressResponse updateAddress(UUID id, UpdateAddressRequest req) {
         Address address = this.repository.findById(id)
