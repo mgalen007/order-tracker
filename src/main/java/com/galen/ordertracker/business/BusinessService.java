@@ -36,7 +36,7 @@ public class BusinessService {
     }
 
     public List<BusinessResponse> listBusinesses() {
-        return this.repository.findAll()
+        return this.repository.findAllByDeregisteredAtIsNull()
                 .stream()
                 .map(this.mapper::toResponse)
                 .toList();
@@ -70,18 +70,19 @@ public class BusinessService {
         return this.mapper.toResponse(business);
     }
 
+    /** Removes the business from the platform; the record is kept for order history. */
     @Transactional
     public void deregisterBusiness(UUID id) {
-        this.repository.delete(requireBusiness(id));
+        requireBusiness(id).deregister();
     }
 
     private Business requireBusiness(UUID id) {
-        return this.repository.findById(id)
+        return this.repository.findByIdAndDeregisteredAtIsNull(id)
                 .orElseThrow(() -> ResourceNotFoundException.of("Business", id));
     }
 
     private void ensurePhoneAvailable(String phone) {
-        if (this.repository.existsByPhone(phone)) {
+        if (this.repository.existsByPhoneAndDeregisteredAtIsNull(phone)) {
             throw new ConflictException("A business with the phone number " + phone + " already exists");
         }
     }

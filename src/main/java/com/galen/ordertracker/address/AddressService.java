@@ -32,7 +32,7 @@ public class AddressService {
 
     @Transactional
     public AddressResponse addAddress(AddAddressRequest req) {
-        Customer customer = this.customerRepository.findById(req.customerId())
+        Customer customer = this.customerRepository.findByIdAndClosedAtIsNull(req.customerId())
                 .orElseThrow(() -> ResourceNotFoundException.of("Customer", req.customerId()));
 
         Address address = this.repository.save(this.mapper.toEntity(req, customer));
@@ -44,14 +44,14 @@ public class AddressService {
     }
 
     public List<AddressResponse> listAddresses() {
-        return this.repository.findAll()
+        return this.repository.findAllByCustomerClosedAtIsNull()
                 .stream()
                 .map(this.mapper::toResponse)
                 .toList();
     }
 
     public List<AddressResponse> searchAddressesByName(String name) {
-        return this.repository.findAllByName(name)
+        return this.repository.findAllByNameAndCustomerClosedAtIsNull(name)
                 .stream()
                 .map(this.mapper::toResponse)
                 .toList();
@@ -71,7 +71,7 @@ public class AddressService {
     }
 
     private Address requireAddress(UUID id) {
-        return this.repository.findById(id)
+        return this.repository.findByIdAndCustomerClosedAtIsNull(id)
                 .orElseThrow(() -> ResourceNotFoundException.of("Address", id));
     }
 }

@@ -6,14 +6,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/** Lookups only see customers whose account is still open. */
 public interface CustomerRepository extends JpaRepository<Customer, UUID> {
-    List<Customer> findByName(String name);
 
-    Optional<Customer> findByEmail(String email);
+    Optional<Customer> findByIdAndClosedAtIsNull(UUID id);
 
-    Optional<Customer> findByPhone(String phone);
+    Optional<Customer> findByEmailAndClosedAtIsNull(String email);
 
-    boolean existsByEmail(String email);
+    Optional<Customer> findByPhoneAndClosedAtIsNull(String phone);
 
-    boolean existsByPhone(String phone);
+    List<Customer> findAllByClosedAtIsNull();
+
+    List<Customer> findAllByNameAndClosedAtIsNull(String name);
+
+    boolean existsByEmailAndClosedAtIsNull(String email);
+
+    boolean existsByPhoneAndClosedAtIsNull(String phone);
 }

@@ -4,24 +4,26 @@ import jakarta.validation.constraints.*;
 
 import java.util.UUID;
 
+import static com.galen.ordertracker.common.validation.ValidationRules.*;
+
 public record AddAddressRequest(
 
         @NotBlank
-        @Size(min = 3, max = 100)
+        @Size(min = 2, max = NAME_MAX)
         String name,
 
         @NotNull
         UUID customerId,
 
         @NotBlank
-        @Size(min = 7, max = 12)
+        @Size(min = 3, max = STREET_MAX)
         String street,
 
         @NotBlank
-        @Size(min = 1, max = 30)
+        @Size(min = 2, max = CITY_MAX)
         String city,
 
-        @Size(min = 5, max = 5)
+        @Size(max = POSTAL_CODE_MAX)
         String postalCode,
 
         @NotNull

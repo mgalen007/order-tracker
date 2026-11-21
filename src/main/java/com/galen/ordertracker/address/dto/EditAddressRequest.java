@@ -4,18 +4,20 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Size;
 
+import static com.galen.ordertracker.common.validation.ValidationRules.*;
+
 public record EditAddressRequest(
 
-        @Size(min = 3, max = 100)
+        @Size(min = 2, max = NAME_MAX)
         String name,
 
-        @Size(min = 7, max = 12)
+        @Size(min = 3, max = STREET_MAX)
         String street,
 
-        @Size(min = 1, max = 30)
+        @Size(min = 2, max = CITY_MAX)
         String city,
 
-        @Size(min = 5, max = 5)
+        @Size(max = POSTAL_CODE_MAX)
         String postalCode,
 
         @DecimalMin("-90.0")
