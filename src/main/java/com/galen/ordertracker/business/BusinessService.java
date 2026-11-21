@@ -1,18 +1,20 @@
 package com.galen.ordertracker.business;
 
 import com.galen.ordertracker.business.dto.BusinessResponse;
-import com.galen.ordertracker.business.dto.CreateBusinessRequest;
-import com.galen.ordertracker.business.dto.UpdateBusinessRequest;
-import jakarta.transaction.Transactional;
-import org.springframework.http.HttpStatus;
+import com.galen.ordertracker.business.dto.RegisterBusinessRequest;
+import com.galen.ordertracker.business.dto.UpdateBusinessProfileRequest;
+import com.galen.ordertracker.common.exception.ConflictException;
+import com.galen.ordertracker.common.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional(readOnly = true)
 public class BusinessService {
+
     private final BusinessRepository repository;
     private final BusinessMapper mapper;
 
@@ -21,24 +23,19 @@ public class BusinessService {
         this.mapper = mapper;
     }
 
-    public BusinessResponse createBusiness(CreateBusinessRequest req) {
-        Business business = this.mapper.toEntity(req);
-        Business savedBusiness = this.repository.save(business);
+    @Transactional
+    public BusinessResponse registerBusiness(RegisterBusinessRequest req) {
+        ensurePhoneAvailable(req.phone());
 
-        return this.mapper.toResponse(savedBusiness);
-    }
-
-    public BusinessResponse findBusinessById(UUID id) {
-        Business business = this.repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Business with ID " + id + " not found"
-                ));
-
+        Business business = this.repository.save(this.mapper.toEntity(req));
         return this.mapper.toResponse(business);
     }
 
-    public List<BusinessResponse> findAllBusinesses() {
+    public BusinessResponse getBusiness(UUID id) {
+        return this.mapper.toResponse(requireBusiness(id));
+    }
+
+    public List<BusinessResponse> listBusinesses() {
         return this.repository.findAll()
                 .stream()
                 .map(this.mapper::toResponse)
@@ -46,26 +43,46 @@ public class BusinessService {
     }
 
     @Transactional
-    public BusinessResponse updateBusiness(UUID id, UpdateBusinessRequest req) {
-        Business business = this.repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Business with ID " + id + " not found"
-                ));
+    public BusinessResponse updateBusinessProfile(UUID id, UpdateBusinessProfileRequest req) {
+        Business business = requireBusiness(id);
 
-        this.mapper.updateEntity(req, business);
+        if (req.phone() != null && !req.phone().equals(business.getPhone())) {
+            ensurePhoneAvailable(req.phone());
+        }
 
+        this.mapper.applyProfileUpdate(req, business);
+        return this.mapper.toResponse(business);
+    }
+
+    /** Starts accepting orders. */
+    @Transactional
+    public BusinessResponse openBusiness(UUID id) {
+        Business business = requireBusiness(id);
+        business.setOpen(true);
+        return this.mapper.toResponse(business);
+    }
+
+    /** Stops accepting orders. */
+    @Transactional
+    public BusinessResponse closeBusiness(UUID id) {
+        Business business = requireBusiness(id);
+        business.setOpen(false);
         return this.mapper.toResponse(business);
     }
 
     @Transactional
-    public void deleteBusiness(UUID id) {
-        Business business = this.repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Business with ID " + id + " not found"
-                ));
+    public void deregisterBusiness(UUID id) {
+        this.repository.delete(requireBusiness(id));
+    }
 
-        this.repository.deleteById(id);
+    private Business requireBusiness(UUID id) {
+        return this.repository.findById(id)
+                .orElseThrow(() -> ResourceNotFoundException.of("Business", id));
+    }
+
+    private void ensurePhoneAvailable(String phone) {
+        if (this.repository.existsByPhone(phone)) {
+            throw new ConflictException("A business with the phone number " + phone + " already exists");
+        }
     }
 }

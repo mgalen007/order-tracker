@@ -3,7 +3,7 @@ package com.galen.ordertracker.business.dto;
 import com.galen.ordertracker.business.BusinessType;
 import jakarta.validation.constraints.*;
 
-public record CreateBusinessRequest(
+public record RegisterBusinessRequest(
     @NotNull
     BusinessType businessType,
 

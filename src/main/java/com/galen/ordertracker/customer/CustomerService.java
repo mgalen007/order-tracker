@@ -1,99 +1,112 @@
 package com.galen.ordertracker.customer;
 
-import com.galen.ordertracker.customer.dto.CreateCustomerRequest;
+import com.galen.ordertracker.address.AddressRepository;
+import com.galen.ordertracker.common.exception.ConflictException;
+import com.galen.ordertracker.common.exception.ResourceNotFoundException;
 import com.galen.ordertracker.customer.dto.CustomerResponse;
-import com.galen.ordertracker.customer.dto.UpdateCustomerRequest;
-import jakarta.transaction.Transactional;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
+import com.galen.ordertracker.customer.dto.RegisterCustomerRequest;
+import com.galen.ordertracker.customer.dto.UpdateCustomerProfileRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
-@Component
+@Service
+@Transactional(readOnly = true)
 public class CustomerService {
 
-    private final CustomerMapper mapper;
     private final CustomerRepository repository;
+    private final AddressRepository addressRepository;
+    private final CustomerMapper mapper;
 
-    public CustomerService(CustomerMapper mapper, CustomerRepository repository) {
-        this.mapper = mapper;
+    public CustomerService(
+            CustomerRepository repository,
+            AddressRepository addressRepository,
+            CustomerMapper mapper
+    ) {
         this.repository = repository;
+        this.addressRepository = addressRepository;
+        this.mapper = mapper;
     }
 
-    public CustomerResponse createCustomer(CreateCustomerRequest req) {
-        Customer customer = this.mapper.toEntity(req);
-        Customer savedCustomer = this.repository.save(customer);
+    @Transactional
+    public CustomerResponse registerCustomer(RegisterCustomerRequest req) {
+        ensureEmailAvailable(req.email());
+        ensurePhoneAvailable(req.phone());
 
-        return this.mapper.toResponse(savedCustomer);
-    }
-
-    public CustomerResponse findCustomerById(UUID id) {
-        Customer customer = this.repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Customer with ID " + id + " not found"
-                ));
-
+        Customer customer = this.repository.save(this.mapper.toEntity(req));
         return this.mapper.toResponse(customer);
     }
 
-    public CustomerResponse findCustomerByEmail(String email) {
-        Customer customer = this.repository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Customer with email " + email + " not found"
-                ));
-
-        return this.mapper.toResponse(customer);
+    public CustomerResponse getCustomer(UUID id) {
+        return this.mapper.toResponse(requireCustomer(id));
     }
 
-    public CustomerResponse findByPhone(String phone) {
-        Customer customer = this.repository.findByPhone(phone)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Customer with the phone number " + phone + " not found"
-                ));
-
-        return this.mapper.toResponse(customer);
-    }
-
-    public List<CustomerResponse> findCustomersByName(String name) {
-        return this.repository.findByName(name)
-                .stream()
+    public CustomerResponse getCustomerByEmail(String email) {
+        return this.repository.findByEmail(email)
                 .map(this.mapper::toResponse)
-                .toList();
+                .orElseThrow(() -> ResourceNotFoundException.of("Customer", "email", email));
     }
 
-    public List<CustomerResponse> findAllCustomers() {
+    public CustomerResponse getCustomerByPhone(String phone) {
+        return this.repository.findByPhone(phone)
+                .map(this.mapper::toResponse)
+                .orElseThrow(() -> ResourceNotFoundException.of("Customer", "phone number", phone));
+    }
+
+    public List<CustomerResponse> listCustomers() {
         return this.repository.findAll()
                 .stream()
                 .map(this.mapper::toResponse)
                 .toList();
     }
 
+    public List<CustomerResponse> searchCustomersByName(String name) {
+        return this.repository.findByName(name)
+                .stream()
+                .map(this.mapper::toResponse)
+                .toList();
+    }
+
     @Transactional
-    public CustomerResponse updateCustomer(UUID id, UpdateCustomerRequest req) {
-        Customer customer = this.repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Customer with ID " + id + " not found"
-                ));
-        this.mapper.updateEntity(req, customer);
+    public CustomerResponse updateCustomerProfile(UUID id, UpdateCustomerProfileRequest req) {
+        Customer customer = requireCustomer(id);
 
+        if (req.email() != null && !req.email().equals(customer.getEmail())) {
+            ensureEmailAvailable(req.email());
+        }
+        if (req.phone() != null && !req.phone().equals(customer.getPhone())) {
+            ensurePhoneAvailable(req.phone());
+        }
+
+        this.mapper.applyProfileUpdate(req, customer);
         return this.mapper.toResponse(customer);
     }
 
-    public CustomerResponse deleteCustomer(UUID id) {
-        Customer customer = this.repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Customer with ID " + id + " not found"
-                ));
-        this.repository.deleteById(id);
+    /** Closes the account together with the customer's saved addresses. */
+    @Transactional
+    public void closeCustomerAccount(UUID id) {
+        Customer customer = requireCustomer(id);
 
-        return this.mapper.toResponse(customer);
+        this.addressRepository.deleteAllByCustomerId(id);
+        this.repository.delete(customer);
     }
 
+    private Customer requireCustomer(UUID id) {
+        return this.repository.findById(id)
+                .orElseThrow(() -> ResourceNotFoundException.of("Customer", id));
+    }
+
+    private void ensureEmailAvailable(String email) {
+        if (this.repository.existsByEmail(email)) {
+            throw new ConflictException("A customer with the email " + email + " already exists");
+        }
+    }
+
+    private void ensurePhoneAvailable(String phone) {
+        if (this.repository.existsByPhone(phone)) {
+            throw new ConflictException("A customer with the phone number " + phone + " already exists");
+        }
+    }
 }

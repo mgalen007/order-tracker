@@ -1,12 +1,13 @@
 package com.galen.ordertracker.business;
 
 import com.galen.ordertracker.business.dto.BusinessResponse;
-import com.galen.ordertracker.business.dto.CreateBusinessRequest;
-import com.galen.ordertracker.business.dto.UpdateBusinessRequest;
+import com.galen.ordertracker.business.dto.RegisterBusinessRequest;
+import com.galen.ordertracker.business.dto.UpdateBusinessProfileRequest;
 import org.springframework.stereotype.Component;
 
 @Component
 public class BusinessMapper {
+
     public BusinessResponse toResponse(Business business) {
         return new BusinessResponse(
                 business.getId(),
@@ -17,11 +18,12 @@ public class BusinessMapper {
                 business.getStreet(),
                 business.getCity(),
                 business.getLatitude(),
-                business.getLongitude()
+                business.getLongitude(),
+                business.isOpen()
         );
     }
 
-    public Business toEntity(CreateBusinessRequest req) {
+    public Business toEntity(RegisterBusinessRequest req) {
         Business business = new Business(
                 req.businessType(),
                 req.name(),
@@ -37,14 +39,14 @@ public class BusinessMapper {
         return business;
     }
 
-    public void updateEntity(UpdateBusinessRequest req, Business business) {
+    public void applyProfileUpdate(UpdateBusinessProfileRequest req, Business business) {
         if (req.businessType() != null) business.setBusinessType(req.businessType());
-        if (req.city() != null) business.setCity(req.city());
-        if (req.description() != null) business.setDescription(req.description());
         if (req.name() != null) business.setName(req.name());
-        if (req.latitude() != null) business.setLatitude(req.latitude());
-        if (req.longitude() != null) business.setLongitude(req.longitude());
+        if (req.description() != null) business.setDescription(req.description());
         if (req.phone() != null) business.setPhone(req.phone());
         if (req.street() != null) business.setStreet(req.street());
+        if (req.city() != null) business.setCity(req.city());
+        if (req.latitude() != null) business.setLatitude(req.latitude());
+        if (req.longitude() != null) business.setLongitude(req.longitude());
     }
 }

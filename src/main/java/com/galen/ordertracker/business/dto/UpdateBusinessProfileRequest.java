@@ -3,7 +3,7 @@ package com.galen.ordertracker.business.dto;
 import com.galen.ordertracker.business.BusinessType;
 import jakarta.validation.constraints.*;
 
-public record UpdateBusinessRequest(
+public record UpdateBusinessProfileRequest(
         BusinessType businessType,
         @Size(min = 2, max = 50) String name,
         @Size(min = 10, max = 500) String description,

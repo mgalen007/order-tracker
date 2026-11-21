@@ -1,88 +1,77 @@
-package com.galen.ordertracker.customer;
+package com.galen.ordertracker.address;
 
-import com.galen.ordertracker.customer.dto.AddressResponse;
-import com.galen.ordertracker.customer.dto.CreateAddressRequest;
-import com.galen.ordertracker.customer.dto.UpdateAddressRequest;
-import jakarta.transaction.Transactional;
-import org.springframework.http.HttpStatus;
+import com.galen.ordertracker.address.dto.AddAddressRequest;
+import com.galen.ordertracker.address.dto.AddressResponse;
+import com.galen.ordertracker.address.dto.EditAddressRequest;
+import com.galen.ordertracker.common.exception.ResourceNotFoundException;
+import com.galen.ordertracker.customer.Customer;
+import com.galen.ordertracker.customer.CustomerRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional(readOnly = true)
 public class AddressService {
 
-    private final CustomerRepository customerRepository;
     private final AddressRepository repository;
+    private final CustomerRepository customerRepository;
     private final AddressMapper mapper;
 
-    public AddressService(CustomerRepository customerRepository, AddressRepository repository, AddressMapper mapper) {
-        this.customerRepository = customerRepository;
+    public AddressService(
+            AddressRepository repository,
+            CustomerRepository customerRepository,
+            AddressMapper mapper
+    ) {
         this.repository = repository;
+        this.customerRepository = customerRepository;
         this.mapper = mapper;
     }
 
     @Transactional
-    public AddressResponse createAddress(CreateAddressRequest req) {
-        Customer customer = this.customerRepository.findById(UUID.fromString(String.valueOf(req.customerId())))
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Customer with ID " + req.customerId() + " not found"
-                ));
+    public AddressResponse addAddress(AddAddressRequest req) {
+        Customer customer = this.customerRepository.findById(req.customerId())
+                .orElseThrow(() -> ResourceNotFoundException.of("Customer", req.customerId()));
 
-        Address address = this.mapper.toEntity(req, customer);
-        Address savedAddress = this.repository.save(address);
-
-        return this.mapper.toResponse(savedAddress);
-    }
-
-    public List<AddressResponse> findAddressesByName(String name) {
-        return this.repository.findAllByName(name)
-                .stream()
-                .map(this.mapper::toResponse)
-                .toList();
-    }
-
-    public AddressResponse findAddressById(UUID id) {
-        Address address = this.repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Address with ID " + id + " not found"
-                ));
-
+        Address address = this.repository.save(this.mapper.toEntity(req, customer));
         return this.mapper.toResponse(address);
     }
 
-    public List<AddressResponse> findAllAddresses() {
+    public AddressResponse getAddress(UUID id) {
+        return this.mapper.toResponse(requireAddress(id));
+    }
+
+    public List<AddressResponse> listAddresses() {
         return this.repository.findAll()
                 .stream()
                 .map(this.mapper::toResponse)
                 .toList();
     }
 
+    public List<AddressResponse> searchAddressesByName(String name) {
+        return this.repository.findAllByName(name)
+                .stream()
+                .map(this.mapper::toResponse)
+                .toList();
+    }
+
     @Transactional
-    public AddressResponse updateAddress(UUID id, UpdateAddressRequest req) {
-        Address address = this.repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Address with ID " + id + " not found"
-                ));
-        this.mapper.updateEntity(req, address);
+    public AddressResponse editAddress(UUID id, EditAddressRequest req) {
+        Address address = requireAddress(id);
 
+        this.mapper.applyEdit(req, address);
         return this.mapper.toResponse(address);
     }
 
-    public AddressResponse deleteAddress(UUID id) {
-        Address address = this.repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Address with ID " + id + " not found"
-                ));
-        this.repository.deleteById(id);
-
-        return this.mapper.toResponse(address);
+    @Transactional
+    public void removeAddress(UUID id) {
+        this.repository.delete(requireAddress(id));
     }
 
+    private Address requireAddress(UUID id) {
+        return this.repository.findById(id)
+                .orElseThrow(() -> ResourceNotFoundException.of("Address", id));
+    }
 }

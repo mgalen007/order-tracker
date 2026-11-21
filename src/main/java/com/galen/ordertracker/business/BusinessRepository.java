@@ -16,4 +16,6 @@ public interface BusinessRepository extends JpaRepository<Business, UUID> {
     List<Business> findByStreet(String street);
 
     List<Business> findByCity(String city);
+
+    boolean existsByPhone(String phone);
 }

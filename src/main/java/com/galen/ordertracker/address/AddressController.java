@@ -1,8 +1,8 @@
-package com.galen.ordertracker.customer;
+package com.galen.ordertracker.address;
 
-import com.galen.ordertracker.customer.dto.AddressResponse;
-import com.galen.ordertracker.customer.dto.CreateAddressRequest;
-import com.galen.ordertracker.customer.dto.UpdateAddressRequest;
+import com.galen.ordertracker.address.dto.AddAddressRequest;
+import com.galen.ordertracker.address.dto.AddressResponse;
+import com.galen.ordertracker.address.dto.EditAddressRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -22,40 +22,32 @@ public class AddressController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public AddressResponse createAddress(
-            @Valid @RequestBody CreateAddressRequest req
-    ) {
-        return this.service.createAddress(req);
+    public AddressResponse addAddress(@Valid @RequestBody AddAddressRequest req) {
+        return this.service.addAddress(req);
     }
 
     @GetMapping
-    public List<AddressResponse> findAddresses(
-            @RequestParam String name
-    ) {
-        if (name != null) return this.service.findAddressesByName(name);
-        return this.service.findAllAddresses();
+    public List<AddressResponse> listAddresses(@RequestParam(required = false) String name) {
+        if (name != null) return this.service.searchAddressesByName(name);
+        return this.service.listAddresses();
     }
 
     @GetMapping("/{id}")
-    public AddressResponse findAddressById(
-            @PathVariable UUID id
-    ) {
-        return this.service.findAddressById(id);
+    public AddressResponse getAddress(@PathVariable UUID id) {
+        return this.service.getAddress(id);
     }
 
     @PatchMapping("/{id}")
-    public AddressResponse updateAddress(
+    public AddressResponse editAddress(
             @PathVariable UUID id,
-            @Valid @RequestBody UpdateAddressRequest req
+            @Valid @RequestBody EditAddressRequest req
     ) {
-        return this.service.updateAddress(id, req);
+        return this.service.editAddress(id, req);
     }
 
     @DeleteMapping("/{id}")
-    public AddressResponse deleteAddress(
-            @PathVariable UUID id
-    ) {
-        return this.service.deleteAddress(id);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeAddress(@PathVariable UUID id) {
+        this.service.removeAddress(id);
     }
-
 }

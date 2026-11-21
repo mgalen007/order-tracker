@@ -1,7 +1,7 @@
 package com.galen.ordertracker.order;
 
 import com.galen.ordertracker.business.Business;
-import com.galen.ordertracker.customer.Address;
+import com.galen.ordertracker.address.Address;
 import com.galen.ordertracker.customer.Customer;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;

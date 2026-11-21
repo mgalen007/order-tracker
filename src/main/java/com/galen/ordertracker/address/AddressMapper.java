@@ -1,9 +1,9 @@
-package com.galen.ordertracker.customer;
+package com.galen.ordertracker.address;
 
-import com.galen.ordertracker.customer.dto.AddressResponse;
-import com.galen.ordertracker.customer.dto.CreateAddressRequest;
-import com.galen.ordertracker.customer.dto.UpdateAddressRequest;
-import com.galen.ordertracker.customer.dto.UpdateCustomerRequest;
+import com.galen.ordertracker.address.dto.AddAddressRequest;
+import com.galen.ordertracker.address.dto.AddressResponse;
+import com.galen.ordertracker.address.dto.EditAddressRequest;
+import com.galen.ordertracker.customer.Customer;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -11,19 +11,19 @@ public class AddressMapper {
 
     public AddressResponse toResponse(Address address) {
         return new AddressResponse(
-          address.getId(),
-          address.getName(),
-          address.getCustomer().getId(),
-          address.getStreet(),
-          address.getCity(),
-          address.getPostalCode(),
-          address.getLatitude(),
-          address.getLongitude()
+                address.getId(),
+                address.getName(),
+                address.getCustomer().getId(),
+                address.getStreet(),
+                address.getCity(),
+                address.getPostalCode(),
+                address.getLatitude(),
+                address.getLongitude()
         );
     }
 
-    public Address toEntity(CreateAddressRequest req, Customer customer) {
-        return new Address(
+    public Address toEntity(AddAddressRequest req, Customer customer) {
+        Address address = new Address(
                 req.name(),
                 customer,
                 req.street(),
@@ -31,21 +31,18 @@ public class AddressMapper {
                 req.latitude(),
                 req.longitude()
         );
+
+        if (req.postalCode() != null) address.setPostalCode(req.postalCode());
+
+        return address;
     }
 
-    public void updateEntity(UpdateAddressRequest req, Address address) {
+    public void applyEdit(EditAddressRequest req, Address address) {
         if (req.name() != null) address.setName(req.name());
         if (req.street() != null) address.setStreet(req.street());
         if (req.city() != null) address.setCity(req.city());
         if (req.postalCode() != null) address.setPostalCode(req.postalCode());
         if (req.latitude() != null) address.setLatitude(req.latitude());
         if (req.longitude() != null) address.setLongitude(req.longitude());
-        if (req.name() != null) address.setName(req.name());
     }
-
-    public void updateEntity(UpdateAddressRequest req, Address address, Customer customer) {
-        updateEntity(req, address);
-        if (req.customerId() != null) address.setCustomer(customer);
-    }
-
 }

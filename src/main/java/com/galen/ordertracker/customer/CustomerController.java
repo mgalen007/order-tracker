@@ -1,10 +1,10 @@
 package com.galen.ordertracker.customer;
 
-import com.galen.ordertracker.business.dto.UpdateBusinessRequest;
-import com.galen.ordertracker.customer.dto.CreateCustomerRequest;
 import com.galen.ordertracker.customer.dto.CustomerResponse;
-import com.galen.ordertracker.customer.dto.UpdateCustomerRequest;
+import com.galen.ordertracker.customer.dto.RegisterCustomerRequest;
+import com.galen.ordertracker.customer.dto.UpdateCustomerProfileRequest;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,37 +21,33 @@ public class CustomerController {
     }
 
     @PostMapping
-    public CustomerResponse createCustomer(
-            @Valid @RequestBody CreateCustomerRequest req
-    ) {
-        return this.service.createCustomer(req);
+    @ResponseStatus(HttpStatus.CREATED)
+    public CustomerResponse registerCustomer(@Valid @RequestBody RegisterCustomerRequest req) {
+        return this.service.registerCustomer(req);
     }
 
     @GetMapping("/{id}")
-    public CustomerResponse findCustomerById(
-            @PathVariable UUID id
-    ) {
-        return this.service.findCustomerById(id);
+    public CustomerResponse getCustomer(@PathVariable UUID id) {
+        return this.service.getCustomer(id);
     }
 
     @GetMapping
-    public List<CustomerResponse> findCustomersByName() {
-        return this.service.findAllCustomers();
+    public List<CustomerResponse> listCustomers(@RequestParam(required = false) String name) {
+        if (name != null) return this.service.searchCustomersByName(name);
+        return this.service.listCustomers();
     }
 
     @PatchMapping("/{id}")
-    public CustomerResponse updateCustomer(
+    public CustomerResponse updateCustomerProfile(
             @PathVariable UUID id,
-            @Valid @RequestBody UpdateCustomerRequest req
+            @Valid @RequestBody UpdateCustomerProfileRequest req
     ) {
-        return this.service.updateCustomer(id, req);
+        return this.service.updateCustomerProfile(id, req);
     }
 
     @DeleteMapping("/{id}")
-    public CustomerResponse deleteCustomer(
-            @PathVariable UUID id
-    ) {
-        return this.service.deleteCustomer(id);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void closeCustomerAccount(@PathVariable UUID id) {
+        this.service.closeCustomerAccount(id);
     }
-
 }
