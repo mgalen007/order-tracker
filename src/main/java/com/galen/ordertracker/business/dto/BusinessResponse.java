@@ -13,5 +13,6 @@ public record BusinessResponse(
         String street,
         String city,
         Double latitude,
-        Double longitude
+        Double longitude,
+        boolean open
 ) {}

@@ -2,6 +2,7 @@ package com.galen.ordertracker.business;
 
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -22,7 +23,7 @@ public class Business {
     @Column(length = 500)
     private String description;
 
-    @Column(nullable = false, length = 16, unique = true)
+    @Column(nullable = false, length = 16)
     private String phone;
 
     @Column(nullable = false, length = 100)
@@ -39,6 +40,8 @@ public class Business {
 
     @Column(nullable = false)
     private boolean open;
+
+    private Instant deregisteredAt;
 
     protected Business() {}
 
@@ -64,6 +67,7 @@ public class Business {
     public Double getLatitude() { return latitude; }
     public Double getLongitude() { return longitude; }
     public boolean isOpen() { return open; }
+    public Instant getDeregisteredAt() { return deregisteredAt; }
 
     public void setBusinessType(BusinessType businessType) {
         this.businessType = businessType;
@@ -99,5 +103,11 @@ public class Business {
 
     public void setOpen(boolean open) {
         this.open = open;
+    }
+
+    /** Takes the business off the platform while keeping its record for order history. */
+    public void deregister() {
+        this.open = false;
+        this.deregisteredAt = Instant.now();
     }
 }

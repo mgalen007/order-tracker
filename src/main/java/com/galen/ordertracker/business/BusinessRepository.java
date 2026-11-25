@@ -6,14 +6,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/** Lookups only see businesses that have not been deregistered. */
 public interface BusinessRepository extends JpaRepository<Business, UUID> {
-    List<Business> findByBusinessType(BusinessType businessType);
 
-    List<Business> findByName(String name);
+    Optional<Business> findByIdAndDeregisteredAtIsNull(UUID id);
 
-    Optional<Business> findByPhone(String phone);
+    List<Business> findAllByDeregisteredAtIsNull();
 
-    List<Business> findByStreet(String street);
-
-    List<Business> findByCity(String city);
+    boolean existsByPhoneAndDeregisteredAtIsNull(String phone);
 }

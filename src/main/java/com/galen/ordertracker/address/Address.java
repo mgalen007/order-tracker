@@ -1,5 +1,6 @@
-package com.galen.ordertracker.customer;
+package com.galen.ordertracker.address;
 
+import com.galen.ordertracker.customer.Customer;
 import jakarta.persistence.*;
 
 import java.util.UUID;

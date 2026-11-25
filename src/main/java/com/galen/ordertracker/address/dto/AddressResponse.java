@@ -1,4 +1,4 @@
-package com.galen.ordertracker.customer.dto;
+package com.galen.ordertracker.address.dto;
 
 import java.util.UUID;
 

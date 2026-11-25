@@ -16,15 +16,17 @@ public class Customer {
     @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(nullable = false, length = 100, unique = true)
+    @Column(nullable = false, length = 100)
     private String email;
 
-    @Column(nullable = false, length = 16, unique = true)
+    @Column(nullable = false, length = 16)
     private String phone;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
+
+    private Instant closedAt;
 
     protected Customer() {}
 
@@ -39,6 +41,7 @@ public class Customer {
     public String getEmail() { return email; }
     public String getPhone() { return phone; }
     public Instant getCreatedAt() { return createdAt; }
+    public Instant getClosedAt() { return closedAt; }
 
     public void setName(String name) {
         this.name = name;
@@ -52,4 +55,8 @@ public class Customer {
         this.phone = phone;
     }
 
+    /** Closes the account while keeping the record for order history. */
+    public void close() {
+        this.closedAt = Instant.now();
+    }
 }
