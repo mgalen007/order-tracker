@@ -2,13 +2,12 @@ package com.galen.ordertracker.item;
 
 import com.galen.ordertracker.business.Business;
 import com.galen.ordertracker.business.BusinessRepository;
+import com.galen.ordertracker.common.exception.ResourceNotFoundException;
 import com.galen.ordertracker.item.dto.AddItemRequest;
 import com.galen.ordertracker.item.dto.EditItemRequest;
 import com.galen.ordertracker.item.dto.ItemResponse;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -68,25 +67,16 @@ public class ItemService {
 
     public Item requireItem(UUID id) {
         return this.repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Item with ID " + id + " not found"
-                ));
+                .orElseThrow(() -> ResourceNotFoundException.of("Item", id));
     }
 
     public Category requireCategory(UUID id) {
         return this.categoryRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Category with ID " + id + " not found"
-                ));
+                .orElseThrow(() -> ResourceNotFoundException.of("Category", id));
     }
 
     public Business requireBusiness(UUID id) {
         return this.businessRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Business with ID " + id + " not found"
-                ));
+                .orElseThrow(() -> ResourceNotFoundException.of("Business", id));
     }
 }
