@@ -6,6 +6,7 @@ import com.galen.ordertracker.item.dto.EditItemRequest;
 import com.galen.ordertracker.item.dto.ItemResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -44,6 +45,7 @@ public class ItemService {
                 .toList();
     }
 
+    @Transactional
     public ItemResponse editItem(UUID id, EditItemRequest req) {
         Item item = requireItem(id);
         this.mapper.applyEdit(req, item);
@@ -51,6 +53,7 @@ public class ItemService {
         return this.mapper.toResponse(item);
     }
 
+    @Transactional
     public ItemResponse editItemCategory(UUID id, EditItemRequest req, UUID categoryId) {
         Item item = requireItem(id);
         this.mapper.applyEdit(req, item, requireCategory(categoryId));
@@ -58,6 +61,7 @@ public class ItemService {
         return this.mapper.toResponse(item);
     }
 
+    @Transactional
     public void removeItem(UUID id) {
         Item item = requireItem(id);
         this.repository.delete(item);
