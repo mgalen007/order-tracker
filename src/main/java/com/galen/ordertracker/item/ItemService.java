@@ -30,11 +30,7 @@ public class ItemService {
     }
 
     public ItemResponse getItemById(UUID id) {
-        Item item = this.repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Item with ID " + id + " not found"
-                ));
+        Item item = requireItem(id);
 
         return this.mapper.toResponse(item);
     }
@@ -47,33 +43,29 @@ public class ItemService {
     }
 
     public ItemResponse editItem(UUID id, EditItemRequest req) {
-        Item item = this.repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Item with ID " + id + " not found"
-                ));
+        Item item = requireItem(id);
         this.mapper.applyEdit(req, item);
 
         return this.mapper.toResponse(item);
     }
 
     public ItemResponse editItemCategory(UUID id, EditItemRequest req, Category category) {
-        Item item = this.repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Item with ID " + id + " not found"
-                ));
+        Item item = requireItem(id);
         this.mapper.applyEdit(req, item, category);
 
         return this.mapper.toResponse(item);
     }
 
     public void removeItem(UUID id) {
-        Item item = this.repository.findById(id)
+        Item item = requireItem(id);
+        this.repository.delete(item);
+    }
+
+    public Item requireItem(UUID id) {
+        return this.repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Item with ID " + id + " not found"
                 ));
-        this.repository.delete(item);
     }
 }
