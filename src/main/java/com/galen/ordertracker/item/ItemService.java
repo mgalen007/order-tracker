@@ -14,16 +14,18 @@ import java.util.UUID;
 @Service
 public class ItemService {
     // addItem, editItem, removeItem, getItemById, listItems
+    private final CategoryRepository categoryRepository;
     private final ItemRepository repository;
     private final ItemMapper mapper;
 
-    public ItemService(ItemRepository repository, ItemMapper mapper) {
+    public ItemService(CategoryRepository categoryRepository, ItemRepository repository, ItemMapper mapper) {
+        this.categoryRepository = categoryRepository;
         this.repository = repository;
         this.mapper = mapper;
     }
 
-    public ItemResponse addItem(AddItemRequest req, Business business, Category category) {
-        Item item = this.mapper.toEntity(req, business, category);
+    public ItemResponse addItem(AddItemRequest req, Business business, UUID categoryId) {
+        Item item = this.mapper.toEntity(req, business, requireCategory(categoryId));
         Item savedItem = this.repository.save(item);
 
         return this.mapper.toResponse(savedItem);
@@ -49,9 +51,9 @@ public class ItemService {
         return this.mapper.toResponse(item);
     }
 
-    public ItemResponse editItemCategory(UUID id, EditItemRequest req, Category category) {
+    public ItemResponse editItemCategory(UUID id, EditItemRequest req, UUID categoryId) {
         Item item = requireItem(id);
-        this.mapper.applyEdit(req, item, category);
+        this.mapper.applyEdit(req, item, requireCategory(categoryId));
 
         return this.mapper.toResponse(item);
     }
@@ -66,6 +68,14 @@ public class ItemService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Item with ID " + id + " not found"
+                ));
+    }
+
+    public Category requireCategory(UUID id) {
+        return this.categoryRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Category with ID " + id + " not found"
                 ));
     }
 }
