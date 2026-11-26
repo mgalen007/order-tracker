@@ -1,6 +1,7 @@
 package com.galen.ordertracker.item;
 
 import com.galen.ordertracker.business.Business;
+import com.galen.ordertracker.business.BusinessRepository;
 import com.galen.ordertracker.item.dto.AddItemRequest;
 import com.galen.ordertracker.item.dto.EditItemRequest;
 import com.galen.ordertracker.item.dto.ItemResponse;
@@ -9,24 +10,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.rmi.server.UID;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class ItemService {
     // addItem, editItem, removeItem, getItemById, listItems
+    private final BusinessRepository businessRepository;
     private final CategoryRepository categoryRepository;
     private final ItemRepository repository;
     private final ItemMapper mapper;
 
-    public ItemService(CategoryRepository categoryRepository, ItemRepository repository, ItemMapper mapper) {
+    public ItemService(BusinessRepository businessRepository, CategoryRepository categoryRepository, ItemRepository repository, ItemMapper mapper) {
         this.categoryRepository = categoryRepository;
+        this.businessRepository = businessRepository;
         this.repository = repository;
         this.mapper = mapper;
     }
 
-    public ItemResponse addItem(AddItemRequest req, Business business, UUID categoryId) {
-        Item item = this.mapper.toEntity(req, business, requireCategory(categoryId));
+    public ItemResponse addItem(AddItemRequest req, UUID businessId, UUID categoryId) {
+        Item item = this.mapper.toEntity(req, requireBusiness(businessId), requireCategory(categoryId));
         Item savedItem = this.repository.save(item);
 
         return this.mapper.toResponse(savedItem);
@@ -80,6 +84,14 @@ public class ItemService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Category with ID " + id + " not found"
+                ));
+    }
+
+    public Business requireBusiness(UUID id) {
+        return this.businessRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Business with ID " + id + " not found"
                 ));
     }
 }
