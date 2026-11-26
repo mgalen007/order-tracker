@@ -37,14 +37,14 @@ public class Item {
     protected Item() {}
     public Item(
             Business business, String name, String description,
-            Category category, BigDecimal price
+            Category category, BigDecimal price, boolean available
     ) {
         this.business = business;
         this.name = name;
         this.description = description;
         this.category = category;
         this.price = price;
-        this.available = true;
+        this.available = available;
     }
 
     public UUID getId() {
