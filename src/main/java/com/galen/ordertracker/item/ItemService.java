@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.rmi.server.UID;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,8 +28,8 @@ public class ItemService {
         this.mapper = mapper;
     }
 
-    public ItemResponse addItem(AddItemRequest req, UUID businessId, UUID categoryId) {
-        Item item = this.mapper.toEntity(req, requireBusiness(businessId), requireCategory(categoryId));
+    public ItemResponse addItem(AddItemRequest req) {
+        Item item = this.mapper.toEntity(req, requireBusiness(req.businessId()), requireCategory(req.categoryId()));
         Item savedItem = this.repository.save(item);
 
         return this.mapper.toResponse(savedItem);
@@ -52,15 +51,11 @@ public class ItemService {
     @Transactional
     public ItemResponse editItem(UUID id, EditItemRequest req) {
         Item item = requireItem(id);
-        this.mapper.applyEdit(req, item);
-
-        return this.mapper.toResponse(item);
-    }
-
-    @Transactional
-    public ItemResponse editItemCategory(UUID id, EditItemRequest req, UUID categoryId) {
-        Item item = requireItem(id);
-        this.mapper.applyEdit(req, item, requireCategory(categoryId));
+        if (req.categoryId() != null) {
+            this.mapper.applyEdit(req, item, requireCategory(req.categoryId()));
+        } else {
+            this.mapper.applyEdit(req, item);
+        }
 
         return this.mapper.toResponse(item);
     }
