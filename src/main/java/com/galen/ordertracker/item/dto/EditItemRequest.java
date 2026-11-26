@@ -1,5 +1,6 @@
 package com.galen.ordertracker.item.dto;
 
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
@@ -17,7 +18,8 @@ public record EditItemRequest(
 
         UUID categoryId,
 
+        @Positive
         BigDecimal price,
 
-        boolean available
+        Boolean available
 ) {}

@@ -10,5 +10,5 @@ public record ItemResponse(
    String description,
    UUID categoryId,
    BigDecimal price,
-   boolean available
+   Boolean available
 ) {}

@@ -1,8 +1,6 @@
 package com.galen.ordertracker.item.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -24,8 +22,9 @@ public record AddItemRequest(
         UUID categoryId,
 
         @NotNull
+        @Positive
         BigDecimal price,
 
         @NotNull
-        boolean available
+        Boolean available
 ) {}
