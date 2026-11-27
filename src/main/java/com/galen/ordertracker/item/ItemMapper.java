@@ -32,7 +32,7 @@ public class ItemMapper {
         if (req.name() != null) item.setName(req.name());
         if (req.description() != null) item.setDescription(req.description());
         if (req.price() != null) item.setPrice(req.price());
-        if (req.available() != item.isAvailable()) item.setAvailable(req.available());
+        if (req.available() != null) item.setAvailable(req.available());
     }
 
     public void applyEdit(EditItemRequest req, Item item, Category category) {
