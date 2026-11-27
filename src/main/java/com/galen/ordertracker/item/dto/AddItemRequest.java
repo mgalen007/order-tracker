@@ -12,7 +12,7 @@ public record AddItemRequest(
         UUID businessId,
 
         @NotBlank
-        @Size(min = 3, max = NAME_MAX)
+        @Size(min = 2, max = NAME_MAX)
         String name,
 
         @Size(max = DESCRIPTION_MAX)
@@ -22,7 +22,8 @@ public record AddItemRequest(
         UUID categoryId,
 
         @NotNull
-        @Positive
+        @PositiveOrZero
+        @Digits(integer = PRICE_INTEGER_DIGITS, fraction = PRICE_FRACTION_DIGITS)
         BigDecimal price,
 
         @NotNull

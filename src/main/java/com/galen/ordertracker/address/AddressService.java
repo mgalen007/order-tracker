@@ -44,14 +44,14 @@ public class AddressService {
     }
 
     public List<AddressResponse> listAddresses() {
-        return this.repository.findAllByCustomerClosedAtIsNull()
+        return this.repository.findAllByDeletedAtIsNullAndCustomerClosedAtIsNull()
                 .stream()
                 .map(this.mapper::toResponse)
                 .toList();
     }
 
     public List<AddressResponse> searchAddressesByName(String name) {
-        return this.repository.findAllByNameAndCustomerClosedAtIsNull(name)
+        return this.repository.findAllByNameAndDeletedAtIsNullAndCustomerClosedAtIsNull(name)
                 .stream()
                 .map(this.mapper::toResponse)
                 .toList();
@@ -67,11 +67,11 @@ public class AddressService {
 
     @Transactional
     public void removeAddress(UUID id) {
-        this.repository.delete(requireAddress(id));
+        requireAddress(id).delete();
     }
 
     private Address requireAddress(UUID id) {
-        return this.repository.findByIdAndCustomerClosedAtIsNull(id)
+        return this.repository.findByIdAndDeletedAtIsNullAndCustomerClosedAtIsNull(id)
                 .orElseThrow(() -> ResourceNotFoundException.of("Address", id));
     }
 }

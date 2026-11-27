@@ -39,7 +39,7 @@ public class ItemController {
         return this.service.listItems();
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ItemResponse editItem(
             @PathVariable UUID id,
             @Valid @RequestBody EditItemRequest req

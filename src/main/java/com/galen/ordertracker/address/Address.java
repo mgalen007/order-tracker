@@ -3,6 +3,7 @@ package com.galen.ordertracker.address;
 import com.galen.ordertracker.customer.Customer;
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -34,6 +35,8 @@ public class Address {
     @Column(nullable = false)
     private Double longitude;
 
+    private Instant deletedAt;
+
     protected Address() {}
 
     public Address(
@@ -47,7 +50,6 @@ public class Address {
         this.city = city;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.postalCode = "00000";
     }
 
     public UUID getId() { return id; }
@@ -58,6 +60,7 @@ public class Address {
     public Double getLatitude() { return latitude; }
     public Double getLongitude() { return longitude; }
     public String getName() { return name; }
+    public Instant getDeletedAt() { return deletedAt; }
 
     public void setCustomer(Customer customer) {
         this.customer = customer;
@@ -84,5 +87,9 @@ public class Address {
     }
 
     public void setName(String name) { this.name = name; }
+
+    public void delete() {
+        this.deletedAt = Instant.now();
+    }
 
 }
