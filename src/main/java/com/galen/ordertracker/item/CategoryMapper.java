@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CategoryMapper {
+
     public CategoryResponse toResponse(Category category) {
         return new CategoryResponse(
                 category.getId(),
@@ -19,16 +20,11 @@ public class CategoryMapper {
     public Category toEntity(CreateCategoryRequest req, Business business) {
         return new Category(
                 business,
-                req.name()
+                req.name().trim()
         );
     }
 
     public void applyEdit(EditCategoryRequest req, Category category) {
-        if (req.name() != null) category.setName(req.name());
-    }
-
-    public void applyEdit(EditCategoryRequest req, Category category, Business business) {
-        applyEdit(req, category);
-        category.setBusiness(business);
+        if (req.name() != null) category.setName(req.name().trim());
     }
 }
