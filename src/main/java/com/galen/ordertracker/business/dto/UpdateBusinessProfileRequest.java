@@ -10,6 +10,7 @@ public record UpdateBusinessProfileRequest(
         BusinessType businessType,
 
         @Size(min = 2, max = NAME_MAX)
+        @Pattern(regexp = NOT_BLANK_PATTERN, message = NOT_BLANK_MESSAGE)
         String name,
 
         @Size(max = DESCRIPTION_MAX)
@@ -19,9 +20,11 @@ public record UpdateBusinessProfileRequest(
         String phone,
 
         @Size(min = 3, max = STREET_MAX)
+        @Pattern(regexp = NOT_BLANK_PATTERN, message = NOT_BLANK_MESSAGE)
         String street,
 
         @Size(min = 2, max = CITY_MAX)
+        @Pattern(regexp = NOT_BLANK_PATTERN, message = NOT_BLANK_MESSAGE)
         String city,
 
         @DecimalMin("-90.0")
