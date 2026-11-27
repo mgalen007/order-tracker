@@ -3,6 +3,7 @@ package com.galen.ordertracker.item;
 import com.galen.ordertracker.business.Business;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.UUID;
 import jakarta.persistence.*;
 
@@ -33,6 +34,8 @@ public class Item {
 
     @Column(nullable = false)
     private boolean available;
+
+    private Instant deletedAt;
 
     protected Item() {}
     public Item(
@@ -75,6 +78,10 @@ public class Item {
         return available;
     }
 
+    public Instant getDeletedAt() {
+        return deletedAt;
+    }
+
     public void setBusiness(Business business) {
         this.business = business;
     }
@@ -97,6 +104,11 @@ public class Item {
 
     public void setAvailable(boolean available) {
         this.available = available;
+    }
+
+    public void delete() {
+        this.deletedAt = Instant.now();
+        this.available = false;
     }
 
 }

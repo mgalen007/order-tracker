@@ -41,7 +41,7 @@ public class ItemService {
     }
 
     public List<ItemResponse> listItems() {
-        return this.repository.findAll()
+        return this.repository.findAllByDeletedAtIsNullAndBusinessDeregisteredAtIsNull()
                 .stream()
                 .map(this.mapper::toResponse)
                 .toList();
@@ -61,12 +61,11 @@ public class ItemService {
 
     @Transactional
     public void removeItem(UUID id) {
-        Item item = requireItem(id);
-        this.repository.delete(item);
+        requireItem(id).delete();
     }
 
     public Item requireItem(UUID id) {
-        return this.repository.findById(id)
+        return this.repository.findByIdAndDeletedAtIsNullAndBusinessDeregisteredAtIsNull(id)
                 .orElseThrow(() -> ResourceNotFoundException.of("Item", id));
     }
 
