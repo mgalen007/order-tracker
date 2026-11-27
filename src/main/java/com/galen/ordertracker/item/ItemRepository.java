@@ -11,6 +11,8 @@ public interface ItemRepository extends JpaRepository<Item, UUID> {
 
     List<Item> findByCategoryId(UUID categoryId);
 
+    boolean existsByCategoryId(UUID categoryId);
+
     List<Item> findByAvailableTrue();
 
     List<Item> findByPrice(BigDecimal price);
