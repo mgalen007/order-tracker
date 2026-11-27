@@ -50,7 +50,6 @@ public class Address {
         this.city = city;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.postalCode = "00000";
     }
 
     public UUID getId() { return id; }
